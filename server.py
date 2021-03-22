@@ -38,4 +38,4 @@ async def clear(self, ctx, amount):
     message = await ctx.send(f'***{str(amount)} messages are deleted***')
     await message.delete(delay=2.5)
 
-client.run("ODE3MzMyNzM4OTM5MDI3NDY3.YEH-bg.hf-dGslNc_9_bOWwPp4RB6zhnJo")
+client.run("")
