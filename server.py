@@ -1,41 +1,24 @@
-import discord
-from discord_slash import SlashCommand
+import os
 
-client = discord.Client(intents=discord.Intents.all())
-# Declares slash commands through the client.
-slash = SlashCommand(client, sync_commands=True, auto_delete=True)
+from pathlib import Path
+from flask import Flask, jsonify, request
+from flask_cors import CORS, cross_origin
 
-guild_ids = [817333076530954261]
+app = Flask(__name__)
+CORS(app, support_credentials=True)
 
-@client.event
-async def on_ready():
-    print("Bot online.")
+@app.route("/", methods=["GET", "POST"])
+@cross_origin(supports_credentials=True)
+def home_page():
+    if request.method == 'POST':
+        f = request.files['file']
+        basepath = os.path.dirname(__file__)  # 当前文件所在路径
+        upload_path = os.path.join(
+            basepath, 'images/', f.filename)
+        f.save(upload_path)
+        return
 
+    
 
-@slash.slash(name="ping")
-async def ping(ctx):  # Defines a new "context" (ctx) command called "ping."
-    await ctx.respond()
-    await ctx.send(f"Pong! ({client.latency*1000}ms)")
-
-
-@slash.slash(name="createacc", guild_ids=guild_ids)
-async def createacc(ctx):  # Defines a new "context" (ctx) command called "ping."
-    await ctx.send(f"Account creating")
-
-#clear
-
-
-@slash.slash(name="clear")
-@slash.has_permissions(administrator=True)
-async def clear(self, ctx, amount):
-    try:
-        amount = int(amount)
-    except:
-        print('test')
-        amount = 0
-
-    await ctx.channel.purge(limit=amount+1)
-    message = await ctx.send(f'***{str(amount)} messages are deleted***')
-    await message.delete(delay=2.5)
-
-client.run("")
+if __name__ == "__main__":
+    app.run(host='localhost', port=8000, debug=True)
